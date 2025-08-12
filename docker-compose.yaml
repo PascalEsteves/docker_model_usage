@@ -1,0 +1,15 @@
+version: '3.8'
+services:
+    app:
+        build: ./app
+        container_name: llm-frontend
+        env_file: ".env"
+        ports:
+            - "8501:8501"
+        depends_on:
+            - llm
+    llm:
+        provider:
+            type: model
+            options:
+                model: ${LLM_MODEL_NAME:-ai/llama3.1:latest}
