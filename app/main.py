@@ -1,13 +1,13 @@
 import streamlit as st
-from openai import OpenAI
+from langchain_openai import ChatOpenAI
 from dotenv import load_dotenv
 import os
 
 load_dotenv()
-
-client = OpenAI(
+client = ChatOpenAI(
+    model = os.getenv("MODEL"),
     base_url=os.getenv("BASE_URL"),
-    api_key=os.getenv("API_KEY")
+    api_key=os.getenv("API_KEY","dockermodelrunner")
 )
 
 st.title("LLM CHAT")
@@ -20,25 +20,26 @@ for msg in st.session_state.messages:
     st.markdown(f"**{msg['role'].capitalize()}:** {msg['content']}")
 
 # Entrada do usuário
-user_input = st.text_input("You:", key="user_input")
+prompt = st.chat_input(
+    "You..."
+)
 
-if user_input:
-    st.session_state.messages.append({"role": "user", "content": user_input})
+if prompt:
+    st.session_state.messages.append({"role": "user", 
+                                      "content": prompt})
+    with st.chat_message("user"):
+        st.write(prompt)
 
     try:
-        response = client.chat.completions.create(
-            model=os.getenv("MODEL"),
-            messages=st.session_state.messages
+        response = client.invoke(
+            input=st.session_state.messages
         )
 
-        reply = response.choices[0].message.content
-
-        st.session_state.messages.append({"role": "assistant", "content": reply})
-        st.experimental_rerun()
+        st.session_state.messages.append({"role": "assistant", 
+                                          "content": response.content})
 
     except Exception as e:
         st.session_state.messages.append({
             "role": "assistant",
             "content": f"⚠️ Error: {str(e)}"
         })
-        st.experimental_rerun()

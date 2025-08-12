@@ -2,6 +2,8 @@ version: '3.8'
 services:
     app:
         build: ./app
+        volumes:
+          - ./app:/app
         container_name: llm-frontend
         env_file: ".env"
         ports:
@@ -12,4 +14,4 @@ services:
         provider:
             type: model
             options:
-                model: ${LLM_MODEL_NAME:-ai/llama3.1:latest}
+                model: ${LLM_MODEL_NAME:-ai/smollm2:latest}
