@@ -15,11 +15,9 @@ st.title("LLM CHAT")
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-# Mostrar histórico
 for msg in st.session_state.messages:
     st.markdown(f"**{msg['role'].capitalize()}:** {msg['content']}")
 
-# Entrada do usuário
 prompt = st.chat_input(
     "You..."
 )
